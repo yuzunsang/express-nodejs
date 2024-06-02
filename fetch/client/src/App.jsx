@@ -1,29 +1,39 @@
+import axios from "axios";
+
 import { useState, useEffect } from "react";
+
+const URL = "http://localhost:3000/api/todo";
 
 function App() {
   const [todoList, setTodoList] = useState([]);
 
-  function fetchData() {
-    fetch("http://localhost:3000/api/todo")
-      .then((res) => res.json())
-      .then((data) => setTodoList(data));
+  async function fetchData() {
+    const res = await axios.get(URL);
+    setTodoList(res.data);
+
+    // fetch(URL)
+    //   .then((res) => res.json())
+    //   .then((data) => setTodoList(data));
   }
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  function handleFormSubmit(event) {
+  async function handleFormSubmit(event) {
     event.preventDefault();
 
     const text = event.target.text.value;
     const done = event.target.done.checked;
 
-    fetch("http://localhost:3000/api/todo", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, done }),
-    }).then(() => fetchData());
+    await axios.post(URL, { text, done });
+    fetchData();
+
+    // fetch(URL, {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ text, done }),
+    // }).then(() => fetchData());
   }
 
   return (
